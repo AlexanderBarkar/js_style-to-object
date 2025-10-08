@@ -5,25 +5,21 @@
  * @return {object}
  */
 function convertToObject(sourceString) {
-  const lines = sourceString.split(';');
-  const styleObject = {};
+  return sourceString
+    .split(';')
+    .map(line => line.trim())
+    .filter(line => line.includes(':'))
+    .map(line => line.split(/:(.+)/))
+    .reduce((stylesMap, [property, value]) => {
+      const key = property.trim();
+      const val = value.trim();
 
-  for (const line of lines) {
-    if (!line.includes(':')) {
-      continue;
-    }
+      if (val !== '') {
+        stylesMap[key] = val;
+      }
 
-    const [property, value] = line.split(':');
-
-    const key = property.trim();
-    const val = value.trim();
-
-    if (key && val !== undefined) {
-      styleObject[key] = val;
-    }
-  }
-
-  return styleObject;
+      return stylesMap;
+    }, {});
 }
 
 module.exports = convertToObject;
