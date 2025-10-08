@@ -1,25 +1,29 @@
 'use strict';
 
-/**
- * @param {string} sourceString
- * @return {object}
- */
 function convertToObject(sourceString) {
-  return sourceString
-    .split(';')
-    .map(line => line.trim())
-    .filter(line => line.includes(':'))
-    .map(line => line.split(/:(.+)/))
-    .reduce((stylesMap, [property, value]) => {
-      const key = property.trim();
-      const val = value.trim();
+  const map = new Map();
+  const rules = sourceString.split(';');
 
-      if (val !== '') {
-        stylesMap[key] = val;
-      }
+  for (let rule of rules) {
+    rule = rule.trim();
 
-      return stylesMap;
-    }, {});
+    if (!rule) {
+      continue;
+    }
+
+    const colonIndex = rule.indexOf(':');
+
+    if (colonIndex === -1) {
+      continue;
+    }
+
+    const property = rule.slice(0, colonIndex).trim();
+    const value = rule.slice(colonIndex + 1).trim();
+
+    map.set(property, value);
+  }
+
+  return Object.fromEntries(map);
 }
 
 module.exports = convertToObject;
